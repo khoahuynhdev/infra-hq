@@ -37,6 +37,7 @@ terraform.rc
 
 # Plans
 tfplan
+*.plan
 
 # Kube config
 contexts/kubeconfig
