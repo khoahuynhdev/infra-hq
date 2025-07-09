@@ -1,0 +1,1 @@
+/home/khoa/projects/infra-hq/_provider.tf
