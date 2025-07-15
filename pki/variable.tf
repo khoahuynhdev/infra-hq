@@ -6,7 +6,7 @@ variable "air-gapped-state" {
 variable "intermediate_cloud_ca_ip_addresses" {
   type        = list(string)
   description = "IP addresses for the intermediate cloud CA"
-  default     = ["10.0.0.0/16"]
+  default     = ["10.0.0.0"]
 }
 
 variable "intermediate_cloud_ca_dns_names" {

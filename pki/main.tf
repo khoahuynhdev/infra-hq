@@ -46,3 +46,12 @@ data "terraform_remote_state" "pki" {
     path = pathexpand(var.air-gapped-state) // NOTE: unmount after use
   }
 }
+
+########### sg_01_ssh_key
+
+resource "tls_private_key" "sg_01_access" {
+  algorithm = "RSA"
+  rsa_bits  = 4096
+}
+
+###########
