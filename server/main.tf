@@ -41,5 +41,18 @@ resource "hcloud_server_network" "sg_01" {
   ip         = "10.0.1.10"
 }
 
-# firewall
+# Attach firewalls to server
+resource "hcloud_firewall_attachment" "server_firewalls" {
+  firewall_id = data.hcloud_firewall.ssh_firewall.id
+  server_ids  = [hcloud_server.sg_01.id]
+}
 
+resource "hcloud_firewall_attachment" "server_web_firewall" {
+  firewall_id = data.hcloud_firewall.web_firewall.id
+  server_ids  = [hcloud_server.sg_01.id]
+}
+
+resource "hcloud_firewall_attachment" "server_custom_firewall" {
+  firewall_id = data.hcloud_firewall.custom_firewall.id
+  server_ids  = [hcloud_server.sg_01.id]
+}
