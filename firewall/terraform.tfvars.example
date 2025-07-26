@@ -1,0 +1,29 @@
+# Example configuration for firewall module
+firewall_name_prefix = "my-app"
+tier                 = "production"
+environment          = "prod"
+
+# Restrict SSH access to specific IPs for security
+ssh_allowed_ips = [
+  "203.0.113.0/24",  # Office network
+  "198.51.100.5/32"  # Admin IP
+]
+
+# VPC IP range for internal communication
+vpc_ip_range = "10.0.0.0/16"
+
+# Custom firewall rules
+custom_rules = [
+  {
+    direction  = "in"
+    protocol   = "tcp"
+    port       = "8080"
+    source_ips = ["0.0.0.0/0"]
+  },
+  {
+    direction  = "in" 
+    protocol   = "udp"
+    port       = "51820"  # WireGuard
+    source_ips = ["0.0.0.0/0"]
+  }
+]
