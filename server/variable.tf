@@ -41,3 +41,33 @@ variable "datacenter" {
     "sin" : "sin-dc1"
   }
 }
+
+variable "tier" {
+  type        = string
+  description = "deployment tier"
+  default     = "ingress"
+}
+
+variable "environment" {
+  type        = string
+  description = "Environment name"
+  default     = "production"
+}
+
+variable "ssh_allowed_ips" {
+  description = "List of IP addresses/ranges allowed to SSH"
+  type        = list(string)
+  default     = ["0.0.0.0/0"]
+}
+
+variable "custom_firewall_rules" {
+  description = "List of custom firewall rules"
+  type = list(object({
+    direction       = string
+    protocol        = string
+    port            = optional(string)
+    source_ips      = optional(list(string))
+    destination_ips = optional(list(string))
+  }))
+  default = []
+}
