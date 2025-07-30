@@ -42,10 +42,6 @@ resource "hcloud_server_network" "sg_01" {
 }
 
 # Attach firewalls to server
-resource "hcloud_firewall_attachment" "server_firewalls" {
-  firewall_id = data.hcloud_firewall.ssh_firewall.id
-  server_ids  = [hcloud_server.sg_01.id]
-}
 
 resource "hcloud_firewall_attachment" "server_web_firewall" {
   firewall_id = data.hcloud_firewall.web_firewall.id
