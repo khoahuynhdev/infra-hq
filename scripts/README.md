@@ -1,5 +1,7 @@
 ## Usage
 
+## add-vm.sh
+
 ### Basic usage
 
 ./add-vm.sh worker-1
@@ -18,3 +20,19 @@
 
 The script now implements all the functionality described in the original comments with robust error
 handling and user-friendly output
+
+## sshf
+
+### basic usage
+
+```bash
+sshf -i ~/.ssh/work_key user@work-server.com
+
+```
+
+### Custom port with command execution
+
+```bash
+sshf -p 2222 user@server.com 'ls -la /home'
+
+```

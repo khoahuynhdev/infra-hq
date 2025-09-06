@@ -1,0 +1,121 @@
+#!/bin/bash
+
+# SSH Agent Forward Script
+# Automatically forwards SSH agent with identity when connecting to servers
+
+# Function to display usage
+usage() {
+	echo "Usage: $0 [OPTIONS] user@hostname [command]"
+	echo ""
+	echo "Options:"
+	echo "  -i IDENTITY    Specify SSH identity/key file (optional)"
+	echo "  -p PORT        Specify SSH port (default: 22)"
+	echo "  -h             Show this help message"
+	echo ""
+	echo "Examples:"
+	echo "  $0 user@server.com"
+	echo "  $0 -i ~/.ssh/work_key user@work-server.com"
+	echo "  $0 -p 2222 user@server.com 'ls -la'"
+}
+
+# Default values
+SSH_PORT=22
+SSH_IDENTITY=""
+SSH_COMMAND=""
+
+# Parse command line options
+while getopts "i:p:h" opt; do
+	case $opt in
+	i)
+		SSH_IDENTITY="$OPTARG"
+		;;
+	p)
+		SSH_PORT="$OPTARG"
+		;;
+	h)
+		usage
+		exit 0
+		;;
+	\?)
+		echo "Invalid option: -$OPTARG" >&2
+		usage
+		exit 1
+		;;
+	esac
+done
+
+# Shift past the options
+shift $((OPTIND - 1))
+
+# Check if hostname is provided
+if [ $# -eq 0 ]; then
+	echo "Error: No hostname provided" >&2
+	usage
+	exit 1
+fi
+
+SSH_HOST="$1"
+shift
+
+# Remaining arguments are the command to execute
+if [ $# -gt 0 ]; then
+	SSH_COMMAND="$*"
+fi
+
+# Check if SSH agent is running
+if [ -z "$SSH_AUTH_SOCK" ]; then
+	echo "Warning: SSH_AUTH_SOCK not set. SSH agent may not be running."
+	echo "Starting ssh-agent..."
+	eval "$(ssh-agent -s)"
+fi
+
+# Function to add identity to agent if specified
+add_identity() {
+	if [ -n "$SSH_IDENTITY" ]; then
+		if [ -f "$SSH_IDENTITY" ]; then
+			echo "Adding identity: $SSH_IDENTITY"
+			ssh-add "$SSH_IDENTITY"
+		else
+			echo "Warning: Identity file '$SSH_IDENTITY' not found"
+			return 1
+		fi
+	else
+		# Add default identities if none specified
+		echo "Adding default identities to agent..."
+		ssh-add 2>/dev/null || echo "No default keys found or already loaded"
+	fi
+}
+
+# Add identity to agent
+add_identity
+
+# Build SSH command with agent forwarding
+SSH_CMD="ssh -A" # -A enables agent forwarding
+
+# Add port if specified
+if [ "$SSH_PORT" != "22" ]; then
+	SSH_CMD="$SSH_CMD -p $SSH_PORT"
+fi
+
+# Add identity if specified
+if [ -n "$SSH_IDENTITY" ] && [ -f "$SSH_IDENTITY" ]; then
+	SSH_CMD="$SSH_CMD -i $SSH_IDENTITY"
+fi
+
+# Add host
+SSH_CMD="$SSH_CMD $SSH_HOST"
+
+# Add command if specified
+if [ -n "$SSH_COMMAND" ]; then
+	SSH_CMD="$SSH_CMD '$SSH_COMMAND'"
+fi
+
+# Display what we're about to execute
+echo "Executing: $SSH_CMD"
+echo "Agent forwarding: ENABLED"
+echo "Identities loaded:"
+ssh-add -l 2>/dev/null || echo "  No identities loaded"
+echo ""
+
+# Execute the SSH command
+eval "$SSH_CMD"
