@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir:*)",
+      "WebFetch(domain:www.conventionalcommits.org)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
