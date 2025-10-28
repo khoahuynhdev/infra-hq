@@ -1,0 +1,28 @@
+# Save as metallb-l2-nat.yaml
+---
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+  name: nat-pool
+  namespace: metallb-system
+spec:
+  addresses:
+  # Using Strategy 1: High range
+  # - 192.168.122.200-192.168.122.250
+  # OR Strategy 2: Small range
+  # - 192.168.122.240-192.168.122.250
+  # OR Strategy 3: CIDR notation
+  - 192.168.122.128/26
+  autoAssign: true
+---
+apiVersion: metallb.io/v1beta1
+kind: L2Advertisement
+metadata:
+  name: nat-l2-advert
+  namespace: metallb-system
+spec:
+  ipAddressPools:
+  - nat-pool
+  # Optional: Only advertise on specific interfaces
+  # interfaces:
+  # - eth0
