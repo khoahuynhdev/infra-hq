@@ -1,5 +1,17 @@
 provider "tls" {}
 
+# Libvirt provider configuration
+provider "libvirt" {
+  uri = var.libvirt_uri
+}
+
+# Variable for libvirt URI (can be overridden in terraform.tfvars)
+variable "libvirt_uri" {
+  description = "Libvirt connection URI"
+  type        = string
+  default     = "qemu:///system"
+}
+
 terraform {
   required_providers {
     tls = {
