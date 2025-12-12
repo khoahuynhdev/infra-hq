@@ -18,6 +18,7 @@ The infrastructure is organized into conceptual layers:
 ### Module Structure
 
 Each Terraform module (vpc, pki, server, firewall) follows a consistent structure:
+
 - `main.tf` - Primary resource definitions
 - `variables.tf` - Input variable declarations
 - `output.tf` or `outputs.tf` - Output values
@@ -27,12 +28,14 @@ Each Terraform module (vpc, pki, server, firewall) follows a consistent structur
 ### Security Architecture
 
 **Air-Gapped PKI**: The PKI module manages certificates in an air-gapped manner:
+
 - Root CA is stored separately from cloud infrastructure
 - Access via `air-gapped-state` variable pointing to local state file
 - Mount/unmount workflow for security (see NOTE comments in pki/main.tf:46)
 - Intermediate CA certificates are signed by the air-gapped root CA
 
 **Firewall Strategy**: Multiple firewall resources for different purposes:
+
 - SSH firewall with restricted source IPs
 - Web firewall for HTTP/HTTPS (ports 80, 443)
 - Custom firewall for dynamic rules via variables
@@ -83,6 +86,7 @@ Modules have dependencies that must be applied in order:
 4. **server** - Must be applied last (depends on vpc, pki, and firewall)
 
 The server module uses `data` sources to reference:
+
 - VPC network via `data.hcloud_network.shared_vpc`
 - PKI outputs via `data.terraform_remote_state.pki`
 - Firewall resources via `data.hcloud_firewall.*`
@@ -103,16 +107,19 @@ The server module uses `data` sources to reference:
 ## Provider Configuration
 
 This repository uses two Terraform providers:
+
 - **hcloud** (~> 1.45) - Hetzner Cloud resources
 - **libvirt** (~> 0.9.0) - Local VM management (QEMU/KVM)
 
 Required variables:
+
 - `hcloud_token` - Hetzner Cloud API token (sensitive)
 - `libvirt_uri` - Libvirt connection URI (default: qemu:///system)
 
 ## Backend Configuration
 
 Uses local backend for state management:
+
 ```hcl
 terraform {
   backend "local" {}
@@ -133,6 +140,7 @@ Common types: `feat`, `fix`, `docs`, `refactor`, `chore`, `test`
 Common scopes: `pki`, `vpc`, `server`, `firewall`, `terraform`, `networking`, `security`
 
 Examples:
+
 - `feat(pki): add intermediate CA certificates`
 - `fix(vpc): correct subnet CIDR range`
 - `chore(terraform): upgrade hetzner provider to 1.45`
@@ -140,20 +148,24 @@ Examples:
 ## Key Technical Details
 
 ### Networking
+
 - VPC CIDR: 10.0.0.0/16
 - Singapore subnet: 10.0.1.0/24
 - Server static IP: 10.0.1.10
 - Network zone: ap-southeast (Singapore)
 
 ### Server Configuration
+
 - Primary IP allocation with auto_delete=false for persistence
 - SSH key injection from PKI module outputs
 - Cloud-init configuration in server/cloud_config.yaml
 - Multiple firewall attachments per server
 
 ### Resource Protection
+
 - VPC has `delete_protection = true` to prevent accidental deletion
 - Primary IPs have `auto_delete = false` for persistence across server recreations
 
 ### Provider Symlinks
-Some modules use symlinked `_provider.tf` files pointing to `/home/khoa/projects/infra-hq/_provider.tf`. These may need updating if the repository path changes.
+
+~~Some modules use symlinked `_provider.tf` files pointing to `/home/khoa/projects/infra-hq/_provider.tf`. These may need updating if the repository path changes.~~ This is deprecated; all provider configurations are in the environment dir now
