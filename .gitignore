@@ -45,3 +45,5 @@ contexts/incluster_kubeconfig
 
 # Taskfile
 .task/
+
+.env

@@ -1,0 +1,15 @@
+# Example terraform.tfvars file
+# Copy this to terraform.tfvars and fill in your actual values
+
+# Generate SSH key if you don't have one:
+#   ssh-keygen -t ed25519 -C "your_email@example.com"
+#   cat ~/.ssh/id_ed25519.pub
+
+ssh_public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX your_email@example.com"
+
+# Generate hashed password:
+#   openssl passwd -6
+# Or for a specific password:
+#   openssl passwd -6 "YourPasswordHere"
+
+vm_user_password_hashed = "$6$XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
